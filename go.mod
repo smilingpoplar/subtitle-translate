@@ -4,7 +4,7 @@ go 1.21.4
 
 require (
 	github.com/asticode/go-astisub v0.26.1
-	github.com/smilingpoplar/translate v0.0.0-20240723080013-8597d8a27ca1
+	github.com/smilingpoplar/translate v0.0.0-20240724040940-2744a402e407
 	github.com/spf13/cobra v1.8.0
 )
 
