@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"os"
-	"strings"
 	"time"
 
 	"github.com/asticode/go-astisub"
@@ -88,22 +87,34 @@ type Frag struct {
 }
 
 func alignSentences(subs *astisub.Subtitles) {
-	items := subs.Items
-	subs.Items = nil
-
-	frags := []Frag{}
-	for _, item := range items {
+	frags := make([]Frag, 0, len(subs.Items))
+	for _, item := range subs.Items {
 		frags = append(frags, Frag{
 			startAt: item.StartAt,
 			endAt:   item.EndAt,
 			text:    item.String(),
 		})
 	}
+	frags = alignFrags(frags)
 
+	subs.Items = make([]*astisub.Item, 0, len(frags))
+	for _, frag := range frags {
+		subs.Items = append(subs.Items, &astisub.Item{
+			StartAt: frag.startAt,
+			EndAt:   frag.endAt,
+			Lines: []astisub.Line{
+				{Items: []astisub.LineItem{{Text: frag.text}}},
+			},
+		})
+	}
+}
+
+func alignFrags(frags []Frag) []Frag {
+	result := []Frag{}
 	var prev *Frag
 	for i := 0; i < len(frags); {
 		str := frags[i].text
-		idx := strings.IndexAny(str, ".?!")
+		idx := indexAny(str, ".?!")
 		if idx != -1 {
 			ratio := float64(idx+1) / float64(len(str))
 			duration := frags[i].endAt - frags[i].startAt
@@ -114,14 +125,7 @@ func alignSentences(subs *astisub.Subtitles) {
 				newFrag.text = prev.text + " " + newFrag.text
 				prev = nil
 			}
-			// output
-			subs.Items = append(subs.Items, &astisub.Item{
-				StartAt: newFrag.startAt,
-				EndAt:   newFrag.endAt,
-				Lines: []astisub.Line{
-					{Items: []astisub.LineItem{{Text: newFrag.text}}},
-				},
-			})
+			result = append(result, newFrag)
 
 			frags[i].startAt = cutAt
 			frags[i].text = str[idx+1:]
@@ -137,13 +141,21 @@ func alignSentences(subs *astisub.Subtitles) {
 		}
 	}
 	if prev != nil {
-		// output
-		subs.Items = append(subs.Items, &astisub.Item{
-			StartAt: prev.startAt,
-			EndAt:   prev.endAt,
-			Lines: []astisub.Line{
-				{Items: []astisub.LineItem{{Text: prev.text}}},
-			},
-		})
+		result = append(result, *prev)
 	}
+	return result
+}
+
+func indexAny(s, chars string) int {
+	for i := 0; i < len(s); i++ {
+		for j := 0; j < len(chars); j++ {
+			if s[i] == chars[j] {
+				if i < len(s)-1 && s[i+1] != ' ' {
+					continue // 比如，s中的".x"不识别为句号
+				}
+				return i
+			}
+		}
+	}
+	return -1
 }
