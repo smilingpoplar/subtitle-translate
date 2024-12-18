@@ -7,16 +7,18 @@ import (
 
 	"github.com/asticode/go-astisub"
 	"github.com/smilingpoplar/translate/translator/google"
+	"github.com/smilingpoplar/translate/util"
 	"github.com/spf13/cobra"
 )
 
 var (
-	input  string
-	output string
-	tolang string
-	align  bool
-	biling bool
-	proxy  string
+	input   string
+	output  string
+	tolang  string
+	align   bool
+	biling  bool
+	fixfile string
+	proxy   string
 )
 
 func main() {
@@ -37,6 +39,7 @@ func main() {
 	cmd.Flags().StringVarP(&tolang, "tolang", "t", "zh-CN", "target language")
 	cmd.Flags().BoolVarP(&align, "align", "a", true, "align subtitle sentences, -a=false to disable")
 	cmd.Flags().BoolVarP(&biling, "biling", "b", false, "bilingual subtitle")
+	cmd.Flags().StringVarP(&fixfile, "fixfile", "f", "", "csv file to fix translation")
 	cmd.Flags().StringVarP(&proxy, "proxy", "p", "", `http or socks5 proxy,
 eg. http://127.0.0.1:7890 or socks5://127.0.0.1:7890`)
 
@@ -65,10 +68,17 @@ func translate(args []string) error {
 	if err != nil {
 		return err
 	}
+
+	fixes, err := util.LoadTranslationFixes(fixfile)
+	if err != nil {
+		return err
+	}
+
 	trans, err := g.Translate(texts, tolang)
 	if err != nil {
 		return err
 	}
+	util.ApplyTranslationFixes(trans, fixes)
 
 	for i, item := range subs.Items {
 		var lines []astisub.Line
