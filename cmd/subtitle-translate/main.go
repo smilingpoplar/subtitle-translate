@@ -3,10 +3,13 @@ package main
 import (
 	"fmt"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/asticode/go-astisub"
-	"github.com/smilingpoplar/translate/translator/google"
+	"github.com/joho/godotenv"
+	"github.com/smilingpoplar/translate/config"
+	"github.com/smilingpoplar/translate/translator"
 	"github.com/smilingpoplar/translate/util"
 	"github.com/spf13/cobra"
 )
@@ -17,21 +20,34 @@ var (
 	tolang  string
 	align   bool
 	biling  bool
+	service string
+	envfile string
 	fixfile string
 	proxy   string
 )
 
 func main() {
-	var cmd = &cobra.Command{
+	cmd := initCmd()
+	if err := cmd.Execute(); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+}
+
+func initCmd() *cobra.Command {
+	cmd := &cobra.Command{
 		Short:                 "translate subtitle file",
 		Use:                   "subtitle-translate -i input.srt -o output.srt -b",
 		DisableFlagsInUseLine: true,
-		Run: func(cmd *cobra.Command, args []string) {
-			if err := translate(args); err != nil {
-				fmt.Fprintln(os.Stderr, err)
+		SilenceErrors:         true,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			if err := initEnv(); err != nil {
+				return err
 			}
+			return translate(args)
 		},
 	}
+
 	cmd.Flags().StringVarP(&input, "input", "i", "", "required, input subtitle file, .srt or .vtt")
 	cmd.MarkFlagRequired("input")
 	cmd.Flags().StringVarP(&output, "output", "o", "", "required, output subtitle file, .srt or .vtt")
@@ -39,14 +55,27 @@ func main() {
 	cmd.Flags().StringVarP(&tolang, "tolang", "t", "zh-CN", "target language")
 	cmd.Flags().BoolVarP(&align, "align", "a", true, "align subtitle sentences, -a=false to disable")
 	cmd.Flags().BoolVarP(&biling, "biling", "b", false, "bilingual subtitle")
+	services := fmt.Sprintf("translate service, eg. %s", strings.Join(config.GetAllServiceStrs(), ", "))
+	cmd.Flags().StringVarP(&service, "service", "s", "google", services)
+	cmd.Flags().StringVarP(&envfile, "envfile", "e", "", "env file for service")
 	cmd.Flags().StringVarP(&fixfile, "fixfile", "f", "", "csv file to fix translation")
 	cmd.Flags().StringVarP(&proxy, "proxy", "p", "", `http or socks5 proxy,
 eg. http://127.0.0.1:7890 or socks5://127.0.0.1:7890`)
 
-	if err := cmd.Execute(); err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
+	return cmd
+}
+
+func initEnv() error {
+	args := []string{}
+	if envfile != "" {
+		args = append(args, envfile)
 	}
+	err := godotenv.Load(args...)
+
+	if envfile != "" && err != nil {
+		return fmt.Errorf("error loading env file (%s): %w", envfile, err)
+	}
+	return nil
 }
 
 func translate(args []string) error {
@@ -64,7 +93,7 @@ func translate(args []string) error {
 		texts = append(texts, item.String())
 	}
 
-	g, err := google.New(google.WithProxy(proxy))
+	t, err := translator.GetTranslator(service, proxy)
 	if err != nil {
 		return err
 	}
@@ -74,18 +103,18 @@ func translate(args []string) error {
 		return err
 	}
 
-	trans, err := g.Translate(texts, tolang)
+	translated, err := t.Translate(texts, tolang)
 	if err != nil {
 		return err
 	}
-	util.ApplyTranslationFixes(trans, fixes)
+	util.ApplyTranslationFixes(translated, fixes)
 
 	for i, item := range subs.Items {
 		var lines []astisub.Line
 		if biling {
 			lines = item.Lines
 		}
-		item.Lines = append(lines, astisub.Line{Items: []astisub.LineItem{{Text: trans[i]}}})
+		item.Lines = append(lines, astisub.Line{Items: []astisub.LineItem{{Text: translated[i]}}})
 	}
 	return subs.Write(output)
 }
