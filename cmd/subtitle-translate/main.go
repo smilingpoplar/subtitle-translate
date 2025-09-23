@@ -84,6 +84,8 @@ func translate(args []string) error {
 		return err
 	}
 
+	fixSubtitles(subs)
+
 	if align {
 		alignSentences(subs)
 	}
@@ -125,6 +127,44 @@ type Frag struct {
 	text    string
 }
 
+func fragsToSubs(frags []Frag, subs *astisub.Subtitles) {
+	subs.Items = make([]*astisub.Item, 0, len(frags))
+	for _, frag := range frags {
+		subs.Items = append(subs.Items, &astisub.Item{
+			StartAt: frag.startAt,
+			EndAt:   frag.endAt,
+			Lines: []astisub.Line{
+				{Items: []astisub.LineItem{{Text: frag.text}}},
+			},
+		})
+	}
+}
+
+func fixSubtitles(subs *astisub.Subtitles) {
+	// 起止时间相同的字幕合并到下一个字幕
+	frags := make([]Frag, 0, len(subs.Items))
+	pad := ""
+	for _, item := range subs.Items {
+		if item.StartAt == item.EndAt {
+			pad += item.String()
+			continue
+		}
+
+		text := item.String()
+		if pad != "" {
+			text = pad + text
+			pad = ""
+		}
+		frags = append(frags, Frag{
+			startAt: item.StartAt,
+			endAt:   item.EndAt,
+			text:    text,
+		})
+	}
+
+	fragsToSubs(frags, subs)
+}
+
 func alignSentences(subs *astisub.Subtitles) {
 	frags := make([]Frag, 0, len(subs.Items))
 	for _, item := range subs.Items {
@@ -136,16 +176,7 @@ func alignSentences(subs *astisub.Subtitles) {
 	}
 	frags = alignFrags(frags)
 
-	subs.Items = make([]*astisub.Item, 0, len(frags))
-	for _, frag := range frags {
-		subs.Items = append(subs.Items, &astisub.Item{
-			StartAt: frag.startAt,
-			EndAt:   frag.endAt,
-			Lines: []astisub.Line{
-				{Items: []astisub.LineItem{{Text: frag.text}}},
-			},
-		})
-	}
+	fragsToSubs(frags, subs)
 }
 
 func alignFrags(frags []Frag) []Frag {
