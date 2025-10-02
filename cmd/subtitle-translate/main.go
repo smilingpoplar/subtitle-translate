@@ -84,11 +84,10 @@ func translate(args []string) error {
 		return err
 	}
 
-	fixSubtitles(subs)
-
 	if align {
 		alignSentences(subs)
 	}
+	fixSubtitles(subs)
 
 	texts := make([]string, 0, len(subs.Items))
 	for _, item := range subs.Items {
@@ -160,6 +159,17 @@ func fixSubtitles(subs *astisub.Subtitles) {
 			endAt:   item.EndAt,
 			text:    text,
 		})
+	}
+
+	// 最后一个字幕是"-"，合并到前一个字幕
+	if len(frags) > 1 {
+		last := &frags[len(frags)-1]
+		if strings.TrimSpace(last.text) == "-" {
+			prev := &frags[len(frags)-2]
+			prev.endAt = last.endAt
+			prev.text = prev.text + last.text
+			frags = frags[:len(frags)-1]
+		}
 	}
 
 	fragsToSubs(frags, subs)
