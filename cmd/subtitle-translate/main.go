@@ -91,7 +91,7 @@ func translate(args []string) error {
 
 	texts := make([]string, 0, len(subs.Items))
 	for _, item := range subs.Items {
-		texts = append(texts, item.String())
+		texts = append(texts, getText(item))
 	}
 
 	t, err := translator.GetTranslator(service, proxy)
@@ -139,17 +139,29 @@ func fragsToSubs(frags []Frag, subs *astisub.Subtitles) {
 	}
 }
 
+func getText(item *astisub.Item) string {
+	var parts []string
+	for _, line := range item.Lines {
+		for _, lineItem := range line.Items {
+			if lineItem.Text != "" {
+				parts = append(parts, lineItem.Text)
+			}
+		}
+	}
+	return strings.Join(parts, " ")
+}
+
 func fixSubtitles(subs *astisub.Subtitles) {
 	// 起止时间相同的字幕合并到下一个字幕
 	frags := make([]Frag, 0, len(subs.Items))
 	pad := ""
 	for _, item := range subs.Items {
 		if item.StartAt == item.EndAt {
-			pad += item.String()
+			pad += getText(item)
 			continue
 		}
 
-		text := item.String()
+		text := getText(item)
 		if pad != "" {
 			text = pad + text
 			pad = ""
@@ -181,7 +193,7 @@ func alignSentences(subs *astisub.Subtitles) {
 		frags = append(frags, Frag{
 			startAt: item.StartAt,
 			endAt:   item.EndAt,
-			text:    item.String(),
+			text:    getText(item),
 		})
 	}
 	frags = alignFrags(frags)
