@@ -29,8 +29,14 @@ github.com/rogpeppe/go-internal v1.13.1/go.mod h1:uMEvuHeurkdAXX61udpOXGD/AzZDWN
 github.com/russross/blackfriday/v2 v2.1.0/go.mod h1:+Rmxgy9KzJVeS9/2gXHxylqXiyQDYRxCVz55jmeOWTM=
 github.com/sashabaranov/go-openai v1.17.9 h1:QEoBiGKWW68W79YIfXWEFZ7l5cEgZBV4/Ow3uy+5hNY=
 github.com/sashabaranov/go-openai v1.17.9/go.mod h1:lj5b/K+zjTSFxVLijLSTDZuP7adOgerWeFyZLUhAKRg=
-github.com/smilingpoplar/translate v0.0.0-20241222065416-4d325e0a8fa2 h1:epGBucsST6SUd5lbGI5Q3wp/IcmHOkYbK5+nDmoJ8pM=
-github.com/smilingpoplar/translate v0.0.0-20241222065416-4d325e0a8fa2/go.mod h1:mCTCUVD7tXaZY7l+EJq4uWcJgmuvJDJ+anSczQsAyl4=
+github.com/smilingpoplar/translate v0.0.0-20251003143800-0fbd82ce2bd6 h1:aO4dRrZHDRiu01mQFrRPOBETgpNNObkAmkslsQcdwbA=
+github.com/smilingpoplar/translate v0.0.0-20251003143800-0fbd82ce2bd6/go.mod h1:mCTCUVD7tXaZY7l+EJq4uWcJgmuvJDJ+anSczQsAyl4=
+github.com/smilingpoplar/translate v0.0.0-20251003145015-e3af2248f309 h1:+yCM/D9m1K6VYpcc4bhEk77QTwkxYtHfq6Bi/OmRJA0=
+github.com/smilingpoplar/translate v0.0.0-20251003145015-e3af2248f309/go.mod h1:mCTCUVD7tXaZY7l+EJq4uWcJgmuvJDJ+anSczQsAyl4=
+github.com/smilingpoplar/translate v0.0.0-20251004044552-88cd5681a523 h1:FZh7W9VDI8NUO02dwOwQ+JH8OeYh0FJw9kb5MxfNZ68=
+github.com/smilingpoplar/translate v0.0.0-20251004044552-88cd5681a523/go.mod h1:mCTCUVD7tXaZY7l+EJq4uWcJgmuvJDJ+anSczQsAyl4=
+github.com/smilingpoplar/translate v0.0.0-20251004062920-5c26050af50c h1:rN39yuwg5rdB7ZrNAMWU6rFXWA6Q1VJYxIL7daThtdI=
+github.com/smilingpoplar/translate v0.0.0-20251004062920-5c26050af50c/go.mod h1:mCTCUVD7tXaZY7l+EJq4uWcJgmuvJDJ+anSczQsAyl4=
 github.com/spf13/cobra v1.8.0 h1:7aJaZx1B85qltLMc546zn58BxxfZdR/W22ej9CFoEf0=
 github.com/spf13/cobra v1.8.0/go.mod h1:WXLWApfZ71AjXPya3WOlMsY9yMs7YeiHhFVlvLyhcho=
 github.com/spf13/pflag v1.0.5 h1:iy+VFUOCP1a+8yFto/drg2CJ5u0yRoB7fZw3DKv/JXA=

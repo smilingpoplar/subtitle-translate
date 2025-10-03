@@ -7,7 +7,7 @@ toolchain go1.23.4
 require (
 	github.com/asticode/go-astisub v0.26.1
 	github.com/joho/godotenv v1.5.1
-	github.com/smilingpoplar/translate v0.0.0-20241222065416-4d325e0a8fa2
+	github.com/smilingpoplar/translate v0.0.0-20251004062920-5c26050af50c
 	github.com/spf13/cobra v1.8.0
 )
 
