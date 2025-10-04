@@ -96,6 +96,7 @@ func translate(args []string) error {
 	frags := subsToFrags(subs)
 	if align {
 		frags = alignFrags(frags)
+		frags = splitByCommaIfTooLong(frags)
 	}
 	frags = fixFrags(frags)
 
@@ -260,4 +261,101 @@ func indexAny(s, chars string) int {
 		}
 	}
 	return -1
+}
+
+func splitByCommaIfTooLong(frags []Frag) []Frag {
+	const minLen, maxLen = 10, 80
+	result := []Frag{}
+
+	for _, frag := range frags {
+		if len(frag.text) <= maxLen {
+			result = append(result, frag)
+			continue
+		}
+
+		parts := splitByComma(frag.text, minLen, maxLen)
+		if len(parts) == 0 {
+			result = append(result, frag)
+			continue
+		}
+
+		// 按字节数比例分配时间
+		totalBytes := 0
+		for _, part := range parts {
+			totalBytes += len(part)
+		}
+
+		duration := frag.endAt - frag.startAt
+		startAt := frag.startAt
+
+		for i, part := range parts {
+			ratio := float64(len(part)) / float64(totalBytes)
+			partDuration := time.Duration(float64(duration) * ratio)
+
+			endAt := startAt + partDuration
+			if i == len(parts)-1 {
+				endAt = frag.endAt
+			}
+
+			result = append(result, Frag{
+				startAt: startAt,
+				endAt:   endAt,
+				text:    part,
+			})
+
+			startAt = endAt
+		}
+	}
+
+	return result
+}
+
+func splitByComma(text string, minLen, maxLen int) []string {
+	parts := strings.Split(text, ",")
+	if len(parts) <= 1 {
+		return nil
+	}
+
+	// 清理和过滤空部分
+	var cleanParts []string
+	for _, part := range parts {
+		part = strings.TrimSpace(part)
+		if part != "" {
+			cleanParts = append(cleanParts, part)
+		}
+	}
+
+	if len(cleanParts) <= 1 {
+		return nil
+	}
+
+	var result []string
+	current := ""
+
+	for i, part := range cleanParts {
+		if current == "" {
+			current = part
+		} else {
+			test := current + ", " + part
+			// 尽量往长了拼，只有在超过maxLen时才分割
+			if len(test) <= maxLen {
+				current = test
+			} else {
+				// 当前片段已经很长，需要分割
+				// 如果不是最后一个部分，添加逗号
+				if i < len(cleanParts)-1 {
+					result = append(result, current+",")
+				} else {
+					result = append(result, current)
+				}
+				current = part
+			}
+		}
+	}
+
+	if current != "" {
+		result = append(result, current)
+	}
+
+	return result
 }
