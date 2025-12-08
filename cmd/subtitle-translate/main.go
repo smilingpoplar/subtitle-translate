@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -15,15 +16,15 @@ import (
 )
 
 var (
-	input   string
-	output  string
-	tolang  string
-	align   bool
-	biling  bool
-	service string
-	envfile string
-	fixfile string
-	proxy   string
+	input     string
+	output    string
+	tolang    string
+	align     bool
+	bilingual bool
+	service   string
+	envfile   string
+	fixfile   string
+	proxy     string
 )
 
 func main() {
@@ -53,8 +54,8 @@ func initCmd() *cobra.Command {
 	cmd.Flags().StringVarP(&output, "output", "o", "", "required, output subtitle file, .srt or .vtt")
 	cmd.MarkFlagRequired("output")
 	cmd.Flags().StringVarP(&tolang, "tolang", "t", "zh-CN", "target language")
-	cmd.Flags().BoolVarP(&align, "align", "a", true, "align subtitle sentences, -a=false to disable")
-	cmd.Flags().BoolVarP(&biling, "biling", "b", false, "bilingual subtitle")
+	cmd.Flags().BoolVarP(&align, "align", "a", false, "align subtitle sentences")
+	cmd.Flags().BoolVarP(&bilingual, "bilingual", "b", false, "output both monolingual and bilingual subtitles")
 	services := fmt.Sprintf("translate service, eg. %s", strings.Join(config.GetAllServiceNames(), ", "))
 	cmd.Flags().StringVarP(&service, "service", "s", "google", services)
 	cmd.Flags().StringVarP(&envfile, "envfile", "e", "", "env file, search .env upwards if not set")
@@ -121,15 +122,20 @@ func translate(args []string) error {
 	}
 	util.ApplyTranslationFixes(translated, fixes)
 
-	fragsToSubs(frags, subs)
-	for i, item := range subs.Items {
-		var lines []astisub.Line
-		if biling {
-			lines = item.Lines
-		}
-		item.Lines = append(lines, astisub.Line{Items: []astisub.LineItem{{Text: translated[i]}}})
+	subs = fragsToSubs(frags, translated, false)
+	if err := subs.Write(output); err != nil {
+		return err
 	}
-	return subs.Write(output)
+
+	if bilingual { // 额外写入双语字幕
+		output2 := bilingualOutputName(output)
+		subs = fragsToSubs(frags, translated, true)
+		if err := subs.Write(output2); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 type Frag struct {
@@ -163,7 +169,8 @@ func getText(item *astisub.Item) string {
 	return strings.Join(parts, " ")
 }
 
-func fragsToSubs(frags []Frag, subs *astisub.Subtitles) {
+func fragsToSubs(frags []Frag, translated []string, bilingual bool) *astisub.Subtitles {
+	subs := astisub.NewSubtitles()
 	subs.Items = make([]*astisub.Item, 0, len(frags))
 	for _, frag := range frags {
 		subs.Items = append(subs.Items, &astisub.Item{
@@ -174,6 +181,21 @@ func fragsToSubs(frags []Frag, subs *astisub.Subtitles) {
 			},
 		})
 	}
+
+	for i, item := range subs.Items {
+		var lines []astisub.Line
+		if bilingual {
+			lines = item.Lines
+		}
+		item.Lines = append(lines, astisub.Line{Items: []astisub.LineItem{{Text: translated[i]}}})
+	}
+	return subs
+}
+
+func bilingualOutputName(output string) string {
+	ext := filepath.Ext(output)
+	base := strings.TrimSuffix(output, ext)
+	return base + ".bi" + ext
 }
 
 func fixFrags(frags []Frag) []Frag {
