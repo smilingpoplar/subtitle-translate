@@ -256,9 +256,14 @@ func alignFrags(frags []Frag) []Frag {
 			frags[i].text = str[idx+1:]
 		} else { // 没有找到
 			if prev != nil {
-				// frags[i]合并到prev中
-				prev.endAt = frags[i].endAt
-				prev.text = prev.text + " " + frags[i].text
+				// 计算合并后的总时长
+				if frags[i].endAt-prev.startAt > 8*time.Second {
+					result = append(result, *prev)
+					prev = &frags[i]
+				} else {
+					prev.endAt = frags[i].endAt
+					prev.text = prev.text + " " + frags[i].text
+				}
 			} else {
 				prev = &frags[i]
 			}
