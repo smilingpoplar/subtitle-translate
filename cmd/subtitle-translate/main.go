@@ -198,7 +198,7 @@ func fragsToSubs(frags []Frag, translated []string, bilingual bool) *astisub.Sub
 func bilingualOutputName(output string) string {
 	ext := filepath.Ext(output)
 	base := strings.TrimSuffix(output, ext)
-	return base + ".bi" + ext
+	return base + ".dual" + ext
 }
 
 func fixFrags(frags []Frag) []Frag {
