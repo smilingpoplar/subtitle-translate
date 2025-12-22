@@ -5,7 +5,7 @@ go 1.22
 require (
 	github.com/asticode/go-astisub v0.38.0
 	github.com/joho/godotenv v1.5.1
-	github.com/smilingpoplar/translate v0.0.0-20251208170125-5df46a4488c6
+	github.com/smilingpoplar/translate v0.0.0-20251222094838-b7e2c0336fd3
 	github.com/spf13/cobra v1.10.1
 )
 

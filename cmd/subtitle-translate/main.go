@@ -120,6 +120,9 @@ func translate(args []string) error {
 	if err != nil {
 		return err
 	}
+	if len(translated) != len(texts) {
+		return fmt.Errorf("error translating subtitles: texts len %d, translated len %d", len(texts), len(translated))
+	}
 	util.ApplyTranslationFixes(translated, fixes)
 
 	subs = fragsToSubs(frags, translated, false)
