@@ -6,7 +6,7 @@ require (
 	github.com/asticode/go-astisub v0.38.0
 	github.com/joho/godotenv v1.5.1
 	github.com/schollz/progressbar/v3 v3.18.0
-	github.com/smilingpoplar/translate v0.0.0-20251223163857-240ab43f48f6
+	github.com/smilingpoplar/translate v0.0.0-20251224071836-e8868d2e3fba
 	github.com/spf13/cobra v1.10.1
 )
 
