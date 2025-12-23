@@ -106,12 +106,11 @@ func translate(args []string) error {
 		texts = append(texts, frag.text)
 	}
 
-	t, err := translator.GetTranslator(service, proxy)
+	fixes, err := util.LoadFixes(fixfile)
 	if err != nil {
 		return err
 	}
-
-	fixes, err := util.LoadTranslationFixes(fixfile)
+	t, err := translator.GetTranslator(service, proxy, fixes)
 	if err != nil {
 		return err
 	}
@@ -123,7 +122,6 @@ func translate(args []string) error {
 	if len(translated) != len(texts) {
 		return fmt.Errorf("error translating subtitles: texts len %d, translated len %d", len(texts), len(translated))
 	}
-	util.ApplyTranslationFixes(translated, fixes)
 
 	subs = fragsToSubs(frags, translated, false)
 	if err := subs.Write(output); err != nil {
