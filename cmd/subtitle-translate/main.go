@@ -9,6 +9,7 @@ import (
 
 	"github.com/asticode/go-astisub"
 	"github.com/joho/godotenv"
+	"github.com/schollz/progressbar/v3"
 	"github.com/smilingpoplar/translate/config"
 	"github.com/smilingpoplar/translate/translator"
 	"github.com/smilingpoplar/translate/util"
@@ -113,6 +114,15 @@ func translate(args []string) error {
 	t, err := translator.GetTranslator(service, proxy, fixes)
 	if err != nil {
 		return err
+	}
+
+	o, ok := t.(translator.TranslationObserver)
+	if ok {
+		bar := progressbar.Default(int64(len(texts)))
+		o.OnTranslated(func(translated []string) error {
+			bar.Add(len(translated))
+			return nil
+		})
 	}
 
 	translated, err := t.Translate(texts, tolang)
