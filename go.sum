@@ -80,6 +80,10 @@ github.com/smilingpoplar/translate v0.0.0-20251224033331-315aaf50f53d h1:s5Ngvzy
 github.com/smilingpoplar/translate v0.0.0-20251224033331-315aaf50f53d/go.mod h1:iNTzxNdNZJHxG2Ql+lChAxHxl3mpFyVXSMMPJtdaRGc=
 github.com/smilingpoplar/translate v0.0.0-20251224071836-e8868d2e3fba h1:FNqYhEa+AxP3H3q3hhEJ9aAuDwMOH8rKE65qd+driGo=
 github.com/smilingpoplar/translate v0.0.0-20251224071836-e8868d2e3fba/go.mod h1:iNTzxNdNZJHxG2Ql+lChAxHxl3mpFyVXSMMPJtdaRGc=
+github.com/smilingpoplar/translate v0.0.0-20251224140654-e64b1c933c50 h1:eb1BawJkULFe+PN1ZPQEyrCxu+e7311z+hj6y+SNbSM=
+github.com/smilingpoplar/translate v0.0.0-20251224140654-e64b1c933c50/go.mod h1:iNTzxNdNZJHxG2Ql+lChAxHxl3mpFyVXSMMPJtdaRGc=
+github.com/smilingpoplar/translate v0.0.0-20251224142900-31abf9381ae0 h1:pkhMcyu03GUaDo9eIkMMqEeadphBlleXZD/am3X3QWw=
+github.com/smilingpoplar/translate v0.0.0-20251224142900-31abf9381ae0/go.mod h1:WGYnj+piJP0T9Ru744++dzmro6oDrP7rs8LCYwUAi48=
 github.com/spf13/cobra v1.10.1 h1:lJeBwCfmrnXthfAupyUTzJ/J4Nc1RsHC/mSRU2dll/s=
 github.com/spf13/cobra v1.10.1/go.mod h1:7SmJGaTHFVBY0jW4NXGluQoLvhqFQM+6XSKD+P4XaB0=
 github.com/spf13/pflag v1.0.9/go.mod h1:McXfInJRrz4CZXVZOBLb0bTZqETkiAhM9Iw0y3An2Bg=

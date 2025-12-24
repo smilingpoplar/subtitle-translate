@@ -118,7 +118,13 @@ func translate(args []string) error {
 
 	o, ok := t.(translator.TranslationObserver)
 	if ok {
-		bar := progressbar.Default(int64(len(texts)))
+		bar := progressbar.NewOptions64(int64(len(texts)),
+			progressbar.OptionSetDescription("Translating: "),
+			progressbar.OptionShowCount(),
+			progressbar.OptionShowIts(),
+			progressbar.OptionSetElapsedTime(true),
+			progressbar.OptionShowElapsedTimeOnFinish(),
+		)
 		o.OnTranslated(func(translated []string) error {
 			bar.Add(len(translated))
 			return nil
