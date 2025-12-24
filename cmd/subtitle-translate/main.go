@@ -24,7 +24,7 @@ var (
 	bilingual bool
 	service   string
 	envfile   string
-	fixfile   string
+	glossfile string
 	proxy     string
 )
 
@@ -60,7 +60,7 @@ func initCmd() *cobra.Command {
 	services := fmt.Sprintf("translate service, eg. %s", strings.Join(config.GetAllServiceNames(), ", "))
 	cmd.Flags().StringVarP(&service, "service", "s", "google", services)
 	cmd.Flags().StringVarP(&envfile, "envfile", "e", "", "env file, search .env upwards if not set")
-	cmd.Flags().StringVarP(&fixfile, "fixfile", "f", "", "csv file to fix translation")
+	cmd.Flags().StringVarP(&glossfile, "glossfile", "g", "", "csv file for glossary")
 	cmd.Flags().StringVarP(&proxy, "proxy", "p", "", `http or socks5 proxy,
 eg. http://127.0.0.1:7890 or socks5://127.0.0.1:7890`)
 
@@ -107,11 +107,11 @@ func translate(args []string) error {
 		texts = append(texts, frag.text)
 	}
 
-	fixes, err := util.LoadFixes(fixfile)
+	glossary, err := util.LoadGlossary(glossfile)
 	if err != nil {
 		return err
 	}
-	t, err := translator.GetTranslator(service, proxy, fixes)
+	t, err := translator.GetTranslator(service, proxy, glossary)
 	if err != nil {
 		return err
 	}

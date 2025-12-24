@@ -40,8 +40,8 @@ github.com/sashabaranov/go-openai v1.41.2 h1:vfPRBZNMpnqu8ELsclWcAvF19lDNgh1t6TV
 github.com/sashabaranov/go-openai v1.41.2/go.mod h1:lj5b/K+zjTSFxVLijLSTDZuP7adOgerWeFyZLUhAKRg=
 github.com/schollz/progressbar/v3 v3.18.0 h1:uXdoHABRFmNIjUfte/Ex7WtuyVslrw2wVPQmCN62HpA=
 github.com/schollz/progressbar/v3 v3.18.0/go.mod h1:IsO3lpbaGuzh8zIMzgY3+J8l4C8GjO0Y9S69eFvNsec=
-github.com/smilingpoplar/translate v0.0.0-20251224144324-d5071672ab32 h1:7C8SQDtS167ya1wt00KF4vpgSffCqTNqulKB+yQe7LM=
-github.com/smilingpoplar/translate v0.0.0-20251224144324-d5071672ab32/go.mod h1:5RpDs1dRKSHi/2RtcjKuALjiVCSMFNote3Lws3wQVDc=
+github.com/smilingpoplar/translate v0.0.0-20251224181001-782a254ab020 h1:w1dtwGqmJ5hNobdCVwIrd9SVSPsWqj3J6K8Lk+w5CFk=
+github.com/smilingpoplar/translate v0.0.0-20251224181001-782a254ab020/go.mod h1:5RpDs1dRKSHi/2RtcjKuALjiVCSMFNote3Lws3wQVDc=
 github.com/spf13/cobra v1.10.2 h1:DMTTonx5m65Ic0GOoRY2c16WCbHxOOw6xxezuLaBpcU=
 github.com/spf13/cobra v1.10.2/go.mod h1:7C1pvHqHw5A4vrJfjNwvOdzYu0Gml16OCs2GRiTUUS4=
 github.com/spf13/pflag v1.0.9/go.mod h1:McXfInJRrz4CZXVZOBLb0bTZqETkiAhM9Iw0y3An2Bg=
