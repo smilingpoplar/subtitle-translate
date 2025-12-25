@@ -118,12 +118,23 @@ func translate(args []string) error {
 
 	o, ok := t.(translator.TranslationObserver)
 	if ok {
-		bar := progressbar.NewOptions64(int64(len(texts)),
+		bar := progressbar.NewOptions(
+			len(texts),
 			progressbar.OptionSetDescription("Translating: "),
+			progressbar.OptionShowElapsedTimeOnFinish(),
+			// options from progressbar.Default()
+			progressbar.OptionSetWriter(os.Stderr),
+			progressbar.OptionSetWidth(10),
+			progressbar.OptionShowTotalBytes(true),
+			progressbar.OptionThrottle(65*time.Millisecond),
 			progressbar.OptionShowCount(),
 			progressbar.OptionShowIts(),
-			progressbar.OptionSetElapsedTime(true),
-			progressbar.OptionShowElapsedTimeOnFinish(),
+			progressbar.OptionOnCompletion(func() {
+				fmt.Fprint(os.Stderr, "\n")
+			}),
+			progressbar.OptionSpinnerType(14),
+			progressbar.OptionFullWidth(),
+			progressbar.OptionSetRenderBlankState(true),
 		)
 		o.OnTranslated(func(translated []string) error {
 			bar.Add(len(translated))
