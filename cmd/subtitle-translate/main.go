@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"strings"
@@ -114,6 +115,9 @@ func translate(args []string) error {
 	t, err := translator.GetTranslator(service, proxy, glossary)
 	if err != nil {
 		return err
+	}
+	if c, ok := t.(io.Closer); ok {
+		defer c.Close()
 	}
 
 	o, ok := t.(translator.TranslationObserver)
